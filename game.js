@@ -1,22 +1,61 @@
 "use strict";
 
-const pageData = [
+let currentChapterIndex = 0;
+let showingSecondEntry = false;
+
+const journalDates = {
+  1: "October 5th, 1925",
+  2: "October 6th, 1925",
+  3: "October 9th, 1925",
+  4: "October 12th, 1925",
+  5: "October 15th, 1925",
+  6: "October 17th, 1925",
+  7: "October 19th, 1925",
+  // 8: "October 21st, 1925",
+};
+
+const symbols = {
+  P: "·",
+  M: "▲",
+  F: "ᚠ",
+  R: "~",
+  W: "≈",
+  S: "ᛟ",
+  X: "◍",
+};
+
+const pages = [
   {
-    journalEntry: "journal/entry1.txt",
-    mapPath: "maps/map1.txt",
-    symbols: {
-      P: "·",
-      M: "▲",
-      F: "ᚠ",
-      R: "~",
-      W: "≈",
-      S: "ᛟ",
-      X: "◍",
-    },
-    continuationEntry: "narrative/entry2.txt",
+    num: 1,
+    entries: [1, 2],
     solution: { P: "Plains", M: "Mountain" },
   },
+  {
+    num: 2,
+    entries: [3, 4],
+    solution: { P: "Plains", M: "Mountain", F: "Forest" },
+  },
+  {
+    num: 3,
+    entries: [5, 6],
+    solution: { P: "Plains", M: "Mountain", W: "Water" },
+  },
+  {
+    num: 4,
+    entries: [7], // 8
+    solution: { P: "Plains", M: "Mountain", S: "Settlement" },
+  },
 ];
+
+const pageData = pages.map((page) => ({
+  firstEntryNumber: page.entries[0],
+  secondEntryNumber: page.entries[1],
+  journalEntry: `journal/chapter${page.num}/entry${page.entries[0]}.txt`,
+  continuationEntry: `journal/chapter${page.num}/entry${page.entries[1]}.txt`,
+  mapPath: `maps/map${page.num}.txt`,
+  symbols: symbols,
+  solution: page.solution,
+}));
 
 async function textPopulatorInator(filePath, targetElementId) {
   try {
@@ -90,12 +129,71 @@ async function swappedMapPopulatorInator(filePath, targetElementId, symbolMap) {
   }
 }
 
+function updateChapterInator(index) {
+  const chapter = pageData[index];
+  const dateNum = chapter.firstEntryNumber;
+
+  if (!chapter) {
+    console.log("THE END");
+    return;
+  }
+
+  currentChapterIndex = index;
+  resetSecondEntryInator();
+
+  document.getElementById("journal-date").innerText = journalDates[dateNum];
+  textPopulatorInator(chapter.journalEntry, "narrative-content");
+  swappedMapPopulatorInator(chapter.mapPath, "map-display", chapter.symbols);
+
+  showingSecondEntry = false;
+}
+
+function resetSecondEntryInator() {
+  const secondDate = document.getElementById("second-journal-date");
+  const secondContent = document.getElementById("second-narrative-content");
+
+  secondDate.style.display = "none";
+  secondContent.style.display = "none";
+  secondDate.style.opacity = 0;
+  secondContent.style.opacity = 0;
+  secondDate.innerText = "";
+  secondContent.textContent = "";
+
+  showingSecondEntry = false;
+}
+
+document.getElementById("option-button").addEventListener("click", async () => {
+  const chapter = pageData[currentChapterIndex];
+  if (!chapter) return;
+
+  const secondDate = document.getElementById("second-journal-date");
+  const secondContent = document.getElementById("second-narrative-content");
+
+  if (!showingSecondEntry && chapter.continuationEntry) {
+    secondDate.innerText = journalDates[chapter.secondEntryNumber] || "";
+
+    await textPopulatorInator(
+      chapter.continuationEntry,
+      "second-narrative-content"
+    );
+
+    secondDate.style.display = "block";
+    secondContent.style.display = "block";
+    secondDate.style.opacity = 0;
+    secondContent.style.opacity = 0;
+
+    setTimeout(() => {
+      secondDate.style.opacity = 1;
+      secondContent.style.opacity = 1;
+    }, 50);
+
+    showingSecondEntry = true;
+  } else {
+    const nextIndex = currentChapterIndex + 1;
+    updateChapterInator(nextIndex);
+  }
+});
+
 document.addEventListener("DOMContentLoaded", () => {
-  const currentChapter = pageData[0];
-  textPopulatorInator(currentChapter.journalEntry, "narrative-content");
-  swappedMapPopulatorInator(
-    "maps/map1.txt",
-    "map-display",
-    currentChapter.symbols
-  );
+  updateChapterInator(currentChapterIndex);
 });

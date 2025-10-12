@@ -1,3 +1,9 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   background-color: #272823;
   color: #eee;
@@ -6,27 +12,35 @@ body {
 .container {
   display: grid;
   grid-template-areas: "menu content";
-  grid-template-columns: 1fr 3fr;
-  padding: 2rem;
+  grid-template-columns: 2fr 2fr;
+  padding: 1rem;
 }
 
-.container > div.menu {
+.container > div.map-container {
   grid-area: menu;
   text-align: center;
-  align-content: center;
 }
 
-#map-content {
-  padding: 2rem;
+.content {
+  display: flex;
+  flex-direction: column;
 }
 
 #map-display {
-  font-size: 1.2rem;
+  font-size: 2rem;
 }
 
-#jounral-content {
-  padding: 2rem;
+#legend {
+  font-size: 2rem;
+  padding: 10px;
   font-family: "Homemade Apple", cursive;
+}
+
+#journal-content {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  line-height: 1.6;
+  opacity: 0.9;
 }
 
 #journal-date {
@@ -35,12 +49,44 @@ body {
 }
 
 #narrative-content {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+#second-journal-date {
+  font-size: 2rem;
+  font-weight: 800;
+  padding-top: 2rem;
+}
+
+#second-narrative-content {
+  font-size: 1.5rem;
+  padding-bottom: 2rem;
+}
+
+#second-narrative-content,
+#second-journal-date {
+  opacity: 0;
+  transition: opacity 1s ease-in;
+  display: none;
+}
+
+.fade-in {
+  display: block;
+  opacity: 1;
+}
+
+#button-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
 }
 
 #option-button {
-  width: 40%;
-  height: 10%;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
   background-color: #272823;
   color: #eee;
   border: 2px solid #eee;

@@ -2,26 +2,31 @@
 <html>
   <head>
     <link rel="stylesheet" href="styles.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,700;1,400&family=Homemade+Apple&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Homemade+Apple&display=swap"
       rel="stylesheet"
     />
   </head>
   <body>
     <div class="container">
-      <div class="menu">
+      <div class="map-container">
         <div id="map-content">
           <pre id="map-display"></pre>
         </div>
-        <button id="option-button">Hi</button>
+        <div>
+          <p id="legend">Legend</p>
+        </div>
       </div>
       <div class="content">
-        <div id="jounral-content">
-          <span id="journal-date">October 5th, 1925</span>
+        <div id="journal-content">
+          <span id="journal-date"></span>
           <p id="narrative-content"></p>
+          <span id="second-journal-date"></span>
+          <p id="second-narrative-content"></p>
         </div>
+      </div>
+      <div id="button-container">
+        <button id="option-button">Turn Page</button>
       </div>
     </div>
     <script src="game.js" defer></script>
