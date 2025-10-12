@@ -1,0 +1,47 @@
+body {
+  background-color: #272823;
+  color: #eee;
+}
+
+.container {
+  display: grid;
+  grid-template-areas: "menu content";
+  grid-template-columns: 1fr 3fr;
+  padding: 2rem;
+}
+
+.container > div.menu {
+  grid-area: menu;
+  text-align: center;
+  align-content: center;
+}
+
+#map-content {
+  padding: 2rem;
+}
+
+#map-display {
+  font-size: 1.2rem;
+}
+
+#jounral-content {
+  padding: 2rem;
+  font-family: "Homemade Apple", cursive;
+}
+
+#journal-date {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+#narrative-content {
+  font-size: 1.4rem;
+}
+
+#option-button {
+  width: 40%;
+  height: 10%;
+  background-color: #272823;
+  color: #eee;
+  border: 2px solid #eee;
+}
