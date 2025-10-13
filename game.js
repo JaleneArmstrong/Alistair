@@ -199,10 +199,6 @@ function symbolContainerPopulatorInator(chapter) {
 
     container.appendChild(legendDiv);
   }
-
-  document
-    .getElementById("legend-button")
-    .addEventListener("click", () => checkLegendCompletionInator(chapter));
 }
 
 async function checkLegendCompletionInator(chapter) {
@@ -329,6 +325,13 @@ document.addEventListener("DOMContentLoaded", () => {
   introOverlay = document.getElementById("intro-overlay");
   introText = document.getElementById("intro-text");
   introPrompt = document.getElementById("intro-prompt");
+
+  document.getElementById("legend-button").addEventListener("click", () => {
+    const currentChapter = pageData[currentChapterIndex];
+    if (currentChapter) {
+      checkLegendCompletionInator(currentChapter);
+    }
+  });
 
   loadIntroInator();
   updateChapterInator(currentChapterIndex);
