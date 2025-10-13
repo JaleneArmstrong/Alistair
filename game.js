@@ -144,8 +144,7 @@ function updateChapterInator(index) {
   document.getElementById("journal-date").innerText = journalDates[dateNum];
   textPopulatorInator(chapter.journalEntry, "narrative-content");
   swappedMapPopulatorInator(chapter.mapPath, "map-display", chapter.symbols);
-
-  showingSecondEntry = false;
+  symbolContainerPopulatorInator(chapter);
 }
 
 function resetSecondEntryInator() {
@@ -160,6 +159,42 @@ function resetSecondEntryInator() {
   secondContent.textContent = "";
 
   showingSecondEntry = false;
+}
+
+function symbolContainerPopulatorInator(chapter) {
+  const container = document.getElementById("legend-container");
+  container.innerHTML = "";
+
+  const solution = chapter.solution;
+
+  for (const [key, word] of Object.entries(solution)) {
+    const legendDiv = document.createElement("div");
+    legendDiv.classList.add("symbol-container");
+
+    const symbolChar = chapter.symbols[key] || key;
+
+    const symbolSpan = document.createElement("span");
+    symbolSpan.textContent = symbolChar;
+    symbolSpan.classList.add("symbol");
+    legendDiv.appendChild(symbolSpan);
+
+    for (let i = 0; i < word.length; i++) {
+      const slot = document.createElement("span");
+      slot.classList.add("symbol-slot");
+      slot.dataset.letter = word[i].toUpperCase();
+      slot.textContent = "_";
+      slot.contentEditable = "true";
+      slot.spellcheck = false;
+
+      slot.addEventListener("input", () => {
+        let char = slot.textContent.toUpperCase();
+        if (char.length > 1) char = char.slice(0, 1);
+        slot.textContent = char;
+      });
+      legendDiv.appendChild(slot);
+    }
+    container.appendChild(legendDiv);
+  }
 }
 
 document.getElementById("option-button").addEventListener("click", async () => {
@@ -192,6 +227,17 @@ document.getElementById("option-button").addEventListener("click", async () => {
     const nextIndex = currentChapterIndex + 1;
     updateChapterInator(nextIndex);
   }
+});
+
+document.addEventListener("keydown", (e) => {
+  const letter = e.key.toUpperCase();
+  const slots = document.querySelectorAll(".symbol-slot");
+
+  slots.forEach((slot) => {
+    if (slot.textContent === "_" && slot.dataset.letter === letter) {
+      slot.textContent = letter;
+    }
+  });
 });
 
 document.addEventListener("DOMContentLoaded", () => {

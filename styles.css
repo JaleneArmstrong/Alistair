@@ -27,13 +27,40 @@ body {
 }
 
 #map-display {
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 #legend {
   font-size: 2rem;
   padding: 10px;
   font-family: "Homemade Apple", cursive;
+}
+
+.symbol-container {
+  margin-top: 1rem;
+  font-family: "Patrick Hand", cursive;
+  font-size: 1.2rem;
+  text-align: left;
+  margin-left: 10rem;
+}
+
+.symbol-container .symbol {
+  font-weight: bold;
+  font-size: 2rem;
+}
+
+.symbol-container span {
+  margin-right: 0.5rem;
+}
+
+.symbol-slot {
+  display: inline-block;
+  border-bottom: 1px solid #000;
+  width: 1rem;
+  text-align: center;
+  margin-right: 0.2rem;
+  font-weight: bold;
+  cursor: text;
 }
 
 #journal-content {
