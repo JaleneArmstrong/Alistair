@@ -24,7 +24,7 @@ const symbols = {
   M: "▲",
   F: "ᚠ",
   R: "~",
-  W: "≈",
+  O: "≈",
   V: "ᛟ",
   X: "◍",
   Q: "?",
@@ -39,7 +39,7 @@ const pages = [
   {
     num: 2,
     entries: [3, 4],
-    solution: { P: "Plains", M: "Mountain", F: "Forest" },
+    solution: { P: "Plains", M: "Mountain", O: "Ocean", V: "Village" },
   },
   {
     num: 3,
