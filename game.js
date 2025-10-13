@@ -6,7 +6,13 @@ let musicStarted = false;
 let introLines = [];
 let currentIntroLine = 0;
 let typedInstance = null;
-let bgMusic, endMusic, pageFlipAudio, introOverlay, introText, introPrompt;
+let bgMusic,
+  endMusic,
+  pageFlipAudio,
+  introOverlay,
+  titleOverlay,
+  introText,
+  introPrompt;
 
 const journalDates = {
   1: "X . 5 . 25",
@@ -193,6 +199,22 @@ function symbolContainerPopulatorInator(chapter) {
           }
         }
 
+        if (e.key === "Backspace") {
+          e.preventDefault();
+
+          let targetIndex;
+          if (slot.textContent === "" || slot.textContent === "_") {
+            targetIndex = flatIndex - 1;
+          } else {
+            targetIndex = flatIndex;
+          }
+          if (targetIndex >= 0) {
+            const targetSlot = allSlots[targetIndex];
+            targetSlot.textContent = "_";
+            targetSlot.focus();
+          }
+        }
+
         if (e.key === "Enter") {
           e.preventDefault();
           const finalizeBtn = document.getElementById("legend-button");
@@ -205,6 +227,9 @@ function symbolContainerPopulatorInator(chapter) {
     }
 
     container.appendChild(legendDiv);
+  }
+  if (allSlots.length > 0) {
+    allSlots[0].focus();
   }
 }
 
@@ -355,6 +380,19 @@ async function showEndScreenInator() {
   }, 1000);
 }
 
+function titleSymbolPopulatorInator() {
+  const container = document.getElementById("title-symbols");
+  if (!container) return;
+
+  for (const key in symbols) {
+    if (key !== "Q") {
+      const symbolSpan = document.createElement("span");
+      symbolSpan.textContent = symbols[key];
+      container.appendChild(symbolSpan);
+    }
+  }
+}
+
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
     e.preventDefault();
@@ -381,8 +419,22 @@ document.addEventListener("DOMContentLoaded", () => {
   endMusic = document.getElementById("end-music");
   pageFlipAudio = document.getElementById("page-flip-sound");
   introOverlay = document.getElementById("intro-overlay");
+  titleOverlay = document.getElementById("title-overlay");
   introText = document.getElementById("intro-text");
   introPrompt = document.getElementById("intro-prompt");
+
+  titleSymbolPopulatorInator();
+  titleOverlay.addEventListener(
+    "click",
+    () => {
+      titleOverlay.style.opacity = 0;
+      setTimeout(() => {
+        titleOverlay.style.display = "none";
+        loadIntroInator();
+      }, 1500);
+    },
+    { once: true }
+  );
 
   document.getElementById("legend-button").addEventListener("click", () => {
     const currentChapter = pageData[currentChapterIndex];
@@ -390,7 +442,4 @@ document.addEventListener("DOMContentLoaded", () => {
       checkLegendCompletionInator(currentChapter);
     }
   });
-
-  loadIntroInator();
-  updateChapterInator(currentChapterIndex);
 });
