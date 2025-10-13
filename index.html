@@ -24,10 +24,10 @@
           <pre id="map-display"></pre>
         </div>
         <div>
-          <p id="legend">Legend</p>
+          <p id="legend">‎</p>
           <div id="legend-container"></div>
           <div id="legend-button-container">
-            <p id="legend-button"></p>
+            <p id="legend-button">Submit</p>
           </div>
         </div>
       </div>
@@ -43,6 +43,23 @@
         <button id="turn-button">Turn Page</button>
       </div>
     </div>
+    <div id="end-screen-overlay">
+      <div id="end-screen-content">
+        <div class="end-screen-layout">
+          <div class="final-map-container">
+            <pre id="final-map-display"></pre>
+          </div>
+          <div>
+            <h3 id="final-legend-title">Legend</h3>
+            <div class="final-legend-container">
+              <div id="final-legend-content"></div>
+              <p id="end-text">The legend is now yours to write.</p>
+              <p id="end-text">~ Alistair</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <audio id="bg-music" src="audio/alistair.mp3" loop></audio>
     <audio
       id="page-flip-sound"
@@ -54,6 +71,7 @@
       src="audio/text-blip.mp3"
       preload="auto"
     ></audio>
+    <audio id="end-music" src="audio/ending.mp3" loop></audio>
     <script src="game.js" defer></script>
     <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
   </body>

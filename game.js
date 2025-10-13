@@ -6,7 +6,7 @@ let musicStarted = false;
 let introLines = [];
 let currentIntroLine = 0;
 let typedInstance = null;
-let bgMusic, pageFlipAudio, introOverlay, introText, introPrompt;
+let bgMusic, endMusic, pageFlipAudio, introOverlay, introText, introPrompt;
 
 const journalDates = {
   1: "X . 5 . 25",
@@ -103,6 +103,7 @@ function updateChapterInator(index) {
   const chapter = pageData[index];
   if (!chapter) {
     console.log("THE END");
+    showEndScreenInator();
     return;
   }
 
@@ -119,6 +120,12 @@ function updateChapterInator(index) {
 function resetSecondEntryInator() {
   const secondDate = document.getElementById("second-journal-date");
   const secondContent = document.getElementById("second-narrative-content");
+  const instructions = document.getElementById("instructions");
+
+  instructions.innerText =
+    "Assign a meaning to each symbol and decipher the map";
+  instructions.classList.remove("error-instructions");
+  instructions.classList.add("instructions");
 
   secondDate.style.display = "none";
   secondContent.style.display = "none";
@@ -216,11 +223,14 @@ async function checkLegendCompletionInator(chapter) {
   });
 
   if (!allCorrect) {
-    alert("Not quite right yet. Keep trying!");
+    const instructions = document.getElementById("instructions");
+    instructions.innerText = "Not quite right yet. Keep trying!";
+    instructions.classList.add("error-instructions");
     return;
   }
 
-  console.log("Legend completed!");
+  instructions.innerText = "‎";
+  instructions.classList.add("instructions");
 
   const secondDate = document.getElementById("second-journal-date");
   const secondContent = document.getElementById("second-narrative-content");
@@ -250,9 +260,7 @@ async function checkLegendCompletionInator(chapter) {
 
 function startMusicInator() {
   if (!musicStarted) {
-    bgMusic.play().catch(() => {
-      console.log("Browser requires interaction to play audio.");
-    });
+    bgMusic.play();
     musicStarted = true;
   }
 }
@@ -299,6 +307,54 @@ function showNextIntroLineInator() {
   introPrompt.style.opacity = 0;
 }
 
+async function showEndScreenInator() {
+  const gameContainer = document.querySelector(".container");
+  gameContainer.style.transition = "opacity 1s ease";
+  gameContainer.style.opacity = 0;
+
+  if (musicStarted) {
+    bgMusic.pause();
+    endMusic.play();
+  }
+
+  const fullSolution = pageData.reduce((accumulator, page) => {
+    return { ...accumulator, ...page.solution };
+  }, {});
+
+  const endOverlay = document.getElementById("end-screen-overlay");
+  const finalLegendContent = document.getElementById("final-legend-content");
+  finalLegendContent.innerHTML = "";
+
+  for (const key in symbols) {
+    if (fullSolution[key]) {
+      const word = fullSolution[key];
+      const symbolChar = symbols[key];
+
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "final-legend-item";
+
+      const symbolSpan = document.createElement("span");
+      symbolSpan.className = "symbol";
+      symbolSpan.textContent = symbolChar;
+
+      const wordSpan = document.createElement("span");
+      wordSpan.className = "word";
+      wordSpan.textContent = word;
+
+      itemDiv.appendChild(symbolSpan);
+      itemDiv.appendChild(wordSpan);
+      finalLegendContent.appendChild(itemDiv);
+    }
+  }
+
+  await swappedMapPopulatorInator("maps/map.txt", "final-map-display", symbols);
+
+  setTimeout(() => {
+    gameContainer.style.display = "none";
+    endOverlay.classList.add("visible");
+  }, 1000);
+}
+
 document.addEventListener("keydown", (e) => {
   if (e.code === "Space") {
     e.preventDefault();
@@ -311,6 +367,7 @@ document.addEventListener("keydown", (e) => {
     }
   }
 });
+
 document.getElementById("turn-button").addEventListener("click", () => {
   pageFlipAudio.currentTime = 0;
   pageFlipAudio.play();
@@ -321,6 +378,7 @@ document.getElementById("turn-button").addEventListener("click", () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   bgMusic = document.getElementById("bg-music");
+  endMusic = document.getElementById("end-music");
   pageFlipAudio = document.getElementById("page-flip-sound");
   introOverlay = document.getElementById("intro-overlay");
   introText = document.getElementById("intro-text");
