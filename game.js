@@ -6,22 +6,17 @@ let musicStarted = false;
 let introLines = [];
 let currentIntroLine = 0;
 let typedInstance = null;
-
-const bgMusic = document.getElementById("bg-music");
-const pageFlipAudio = document.getElementById("page-flip-sound");
-const introOverlay = document.getElementById("intro-overlay");
-const introText = document.getElementById("intro-text");
-const introPrompt = document.getElementById("intro-prompt");
+let bgMusic, pageFlipAudio, introOverlay, introText, introPrompt;
 
 const journalDates = {
-  1: "October 5th, 1925",
-  2: "October 6th, 1925",
-  3: "October 9th, 1925",
-  4: "October 12th, 1925",
-  5: "October 15th, 1925",
-  6: "October 17th, 1925",
-  7: "October 19th, 1925",
-  8: "October 21st, 1925",
+  1: "X . 5 . 25",
+  2: "X . 6 . 25",
+  3: "X . 9 . 25",
+  4: "X . 12 . 25",
+  5: "X . 15 . 25",
+  6: "X . 17 . 25",
+  7: "X . 19 . 25",
+  8: "X . 21 . 25",
 };
 
 const symbols = {
@@ -30,8 +25,9 @@ const symbols = {
   F: "ᚠ",
   R: "~",
   W: "≈",
-  S: "ᛟ",
+  V: "ᛟ",
   X: "◍",
+  Q: "?",
 };
 
 const pages = [
@@ -328,6 +324,12 @@ document.getElementById("turn-button").addEventListener("click", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  bgMusic = document.getElementById("bg-music");
+  pageFlipAudio = document.getElementById("page-flip-sound");
+  introOverlay = document.getElementById("intro-overlay");
+  introText = document.getElementById("intro-text");
+  introPrompt = document.getElementById("intro-prompt");
+
   loadIntroInator();
   updateChapterInator(currentChapterIndex);
 });
