@@ -197,8 +197,9 @@ body {
 
 #legend-container {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.1rem;
+  grid-template-columns: repeat(2, auto);
+  column-gap: 2rem;
+  row-gap: 0.5rem;
   margin-top: 1rem;
   justify-content: center;
 }
@@ -286,6 +287,7 @@ body {
   color: #eee;
   background-color: #141412;
   border-radius: 5%;
+  display: none;
 }
 
 #legend-button-container {
@@ -304,6 +306,7 @@ body {
   color: #eee;
   background-color: #141412;
   border-radius: 5%;
+  display: none;
 }
 
 #intro-overlay {
@@ -331,17 +334,20 @@ body {
 #intro-dialogue-box {
   width: 700px;
   height: 200px;
-  background-color: rgba(0, 0, 0, 0.7);
-  padding: 2rem;
-  border: 2px solid #eee;
+  background-color: rgba(26, 26, 26, 0.85);
+  backdrop-filter: blur(5px);
+  color: #c5b8a5;
   font-size: 1.5rem;
+  border: 2px solid #665e52;
   border-radius: 5px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  padding: 2rem;
   overflow-y: auto;
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: space-between;
 }

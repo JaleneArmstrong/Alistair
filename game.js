@@ -3,12 +3,14 @@
 let currentChapterIndex = 0;
 let showingSecondEntry = false;
 let musicStarted = false;
+let introReady = false;
 let introLines = [];
 let currentIntroLine = 0;
 let typedInstance = null;
 let bgMusic,
   endMusic,
-  pageFlipAudio,
+  pageFlipSound,
+  dialogueSound,
   introOverlay,
   titleOverlay,
   introText,
@@ -105,10 +107,10 @@ async function swappedMapPopulatorInator(filePath, targetElementId, symbolMap) {
   }
 }
 
-function updateChapterInator(index) {
+async function updateChapterInator(index) {
+  document.getElementById("legend-button").style.display = "block";
   const chapter = pageData[index];
   if (!chapter) {
-    console.log("THE END");
     showEndScreenInator();
     return;
   }
@@ -118,8 +120,10 @@ function updateChapterInator(index) {
 
   document.getElementById("journal-date").innerText =
     journalDates[chapter.firstEntryNumber];
-  textPopulatorInator(chapter.journalEntry, "narrative-content");
-  swappedMapPopulatorInator(chapter.mapPath, "map-display", chapter.symbols);
+  await Promise.all([
+    textPopulatorInator(chapter.journalEntry, "narrative-content"),
+    swappedMapPopulatorInator(chapter.mapPath, "map-display", chapter.symbols),
+  ]);
   symbolContainerPopulatorInator(chapter);
 }
 
@@ -296,20 +300,27 @@ async function loadIntroInator() {
     if (!response.ok) throw new Error(`Failed to load intro.txt`);
     const text = await response.text();
     introLines = text.split("\n").filter((line) => line.trim() !== "");
+    const dialogueBox = document.getElementById("intro-dialogue-box");
+    dialogueBox.style.display = "flex";
+    introReady = true;
     showNextIntroLineInator();
   } catch (err) {
     console.error(err);
   }
 }
 
-function showNextIntroLineInator() {
+async function showNextIntroLineInator() {
   if (currentIntroLine >= introLines.length) {
+    const gameContainer = document.querySelector(".container");
+    await updateChapterInator(0);
+
     introOverlay.style.transition = "opacity 1s ease";
     introOverlay.style.opacity = 0;
+    gameContainer.style.opacity = 1;
+
     setTimeout(() => {
       introOverlay.style.display = "none";
       startMusicInator();
-      updateChapterInator(0);
     }, 1000);
     return;
   }
@@ -394,9 +405,12 @@ function titleSymbolPopulatorInator() {
 }
 
 document.addEventListener("keydown", (e) => {
-  if (e.code === "Space") {
+  if (e.code === "Space" && introReady) {
     e.preventDefault();
     if (introOverlay.style.display !== "none") {
+      dialogueSound.currentTime = 0;
+      dialogueSound.play();
+      dialogueSound.volume = 0.2;
       if (typedInstance && typedInstance.typing) {
         typedInstance.complete();
       } else {
@@ -407,8 +421,8 @@ document.addEventListener("keydown", (e) => {
 });
 
 document.getElementById("turn-button").addEventListener("click", () => {
-  pageFlipAudio.currentTime = 0;
-  pageFlipAudio.play();
+  pageFlipSound.currentTime = 0;
+  pageFlipSound.play();
 
   const nextIndex = currentChapterIndex + 1;
   updateChapterInator(nextIndex);
@@ -417,7 +431,8 @@ document.getElementById("turn-button").addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", () => {
   bgMusic = document.getElementById("bg-music");
   endMusic = document.getElementById("end-music");
-  pageFlipAudio = document.getElementById("page-flip-sound");
+  pageFlipSound = document.getElementById("page-flip-sound");
+  dialogueSound = document.getElementById("dialogue-sound");
   introOverlay = document.getElementById("intro-overlay");
   titleOverlay = document.getElementById("title-overlay");
   introText = document.getElementById("intro-text");
