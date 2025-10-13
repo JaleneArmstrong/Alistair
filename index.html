@@ -1,7 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Alistair</title>
     <link rel="stylesheet" href="styles.css" />
+    <link
+      rel="icon"
+      <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text x='50' y='65' text-anchor='middle' dominant-baseline='middle' font-size='100' fill='%23c5b8a5'>◍</text></svg>"
+    />
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Homemade+Apple&display=swap"
       rel="stylesheet"
@@ -13,6 +21,8 @@
         <h1 id="game-title">Alistair</h1>
         <div id="title-symbols"></div>
         <p id="title-prompt">Click ANYWHERE to begin</p>
+        <p id="info">Jammin 2025 · Bare-Bones Game Jam</p>
+        <p id="info-part-two">Developed by sourcherri 〡 HTML · CSS · JS</p>
       </div>
     </div>
     <div id="intro-overlay">
@@ -21,7 +31,6 @@
         <p id="intro-prompt">Press SPACE to continue</p>
       </div>
     </div>
-
     <div class="container">
       <div class="map-container">
         <p id="instructions"></p>
@@ -65,6 +74,9 @@
         </div>
       </div>
     </div>
+    <footer>
+      <p id="watermark">o//x</p>
+    </footer>
     <audio id="bg-music" src="audio/alistair.mp3" loop></audio>
     <audio
       id="page-flip-sound"
@@ -72,8 +84,15 @@
       preload="auto"
     ></audio>
     <audio id="dialogue-sound" src="audio/dialogue.mp3" preload="auto"></audio>
+    <audio
+      id="key-press-sound"
+      src="audio/key-press.mp3"
+      preload="auto"
+    ></audio>
+    <audio id="writing-sound" src="audio/writing.mp3" preload="auto"></audio>
     <audio id="end-music" src="audio/ending.mp3" loop></audio>
     <script src="game.js" defer></script>
+    <!-- CREDITS: https://github.com/mattboldt/typed.js -->
     <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
   </body>
 </html>

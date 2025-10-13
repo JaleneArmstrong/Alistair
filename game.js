@@ -11,6 +11,8 @@ let bgMusic,
   endMusic,
   pageFlipSound,
   dialogueSound,
+  keyPressSound,
+  writingSound,
   introOverlay,
   titleOverlay,
   introText,
@@ -57,7 +59,7 @@ const pages = [
   {
     num: 4,
     entries: [7, 8],
-    solution: { X: "City" },
+    solution: { X: "Sunken City" },
   },
 ];
 
@@ -71,6 +73,8 @@ const pageData = pages.map((page) => ({
   solution: page.solution,
 }));
 
+// In case you were wondering, yes, every function is an "-inator."
+// It's how I coped with the the pain. :') (Shoutout Dr. Doofenshmirtz)
 async function textPopulatorInator(filePath, targetElementId) {
   try {
     const response = await fetch(filePath);
@@ -132,8 +136,7 @@ function resetSecondEntryInator() {
   const secondContent = document.getElementById("second-narrative-content");
   const instructions = document.getElementById("instructions");
 
-  instructions.innerText =
-    "Assign a meaning to each symbol and decipher the map";
+  instructions.innerText = "Determine the meaning of each symbol";
   instructions.classList.remove("error-instructions");
   instructions.classList.add("instructions");
 
@@ -153,6 +156,8 @@ function resetSecondEntryInator() {
   if (optionBtn) optionBtn.style.display = "none";
 }
 
+// I DESPISE how stupidly long this function is
+// But I can find no will to refactor it :p
 function symbolContainerPopulatorInator(chapter) {
   const container = document.getElementById("legend-container");
   container.innerHTML = "";
@@ -171,30 +176,44 @@ function symbolContainerPopulatorInator(chapter) {
 
     for (let i = 0; i < word.length; i++) {
       const slot = document.createElement("span");
-      slot.classList.add("symbol-slot");
-      slot.dataset.correct = word[i].toUpperCase();
-      slot.textContent = "_";
-      slot.contentEditable = "true";
-      slot.spellcheck = false;
+      if (word[i] === " ") {
+        slot.classList.add("space-slot");
+        slot.textContent = " ";
+        slot.contentEditable = "false";
+      } else {
+        slot.classList.add("symbol-slot");
+        slot.dataset.correct = word[i].toUpperCase();
+        slot.textContent = "_";
+        slot.contentEditable = "true";
+      }
 
       slot.addEventListener("input", () => {
         const char = slot.textContent.toUpperCase().replace(/[^A-Z]/g, "");
         slot.textContent = char.slice(0, 1);
 
-        const currentIndex = allSlots.indexOf(slot);
-        if (char && currentIndex < allSlots.length - 1) {
-          allSlots[currentIndex + 1].focus();
+        if (char) {
+          const currentIndex = allSlots.indexOf(slot);
+          for (let i = currentIndex + 1; i < allSlots.length; i++) {
+            if (allSlots[i].contentEditable === "true") {
+              allSlots[i].focus();
+              break;
+            }
+          }
         }
       });
 
       slot.addEventListener("keydown", (e) => {
-        const flatIndex = allSlots.indexOf(slot);
+        keyPressSound.currentTime = 0;
+        keyPressSound.play();
+        keyPressSound.volume = 0.2;
+
+        const currentIndex = allSlots.indexOf(slot);
 
         if (
           ["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(e.key)
         ) {
           e.preventDefault();
-          let nextIndex = flatIndex;
+          let nextIndex = currentIndex;
 
           if (e.key === "ArrowRight") nextIndex++;
           if (e.key === "ArrowLeft") nextIndex--;
@@ -206,16 +225,16 @@ function symbolContainerPopulatorInator(chapter) {
         if (e.key === "Backspace") {
           e.preventDefault();
 
-          let targetIndex;
-          if (slot.textContent === "" || slot.textContent === "_") {
-            targetIndex = flatIndex - 1;
+          if (slot.textContent && slot.textContent !== "_") {
+            slot.textContent = "_";
           } else {
-            targetIndex = flatIndex;
-          }
-          if (targetIndex >= 0) {
-            const targetSlot = allSlots[targetIndex];
-            targetSlot.textContent = "_";
-            targetSlot.focus();
+            for (let i = currentIndex - 1; i >= 0; i--) {
+              if (allSlots[i].contentEditable === "true") {
+                allSlots[i].textContent = "_";
+                allSlots[i].focus();
+                break;
+              }
+            }
           }
         }
 
@@ -265,6 +284,8 @@ async function checkLegendCompletionInator(chapter) {
   const secondContent = document.getElementById("second-narrative-content");
 
   if (!showingSecondEntry && chapter.continuationEntry) {
+    writingSound.currentTime = 0;
+    writingSound.play();
     secondDate.innerText = journalDates[chapter.secondEntryNumber] || "";
 
     await textPopulatorInator(
@@ -433,6 +454,8 @@ document.addEventListener("DOMContentLoaded", () => {
   endMusic = document.getElementById("end-music");
   pageFlipSound = document.getElementById("page-flip-sound");
   dialogueSound = document.getElementById("dialogue-sound");
+  keyPressSound = document.getElementById("key-press-sound");
+  writingSound = document.getElementById("writing-sound");
   introOverlay = document.getElementById("intro-overlay");
   titleOverlay = document.getElementById("title-overlay");
   introText = document.getElementById("intro-text");
