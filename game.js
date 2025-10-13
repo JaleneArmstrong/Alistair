@@ -39,17 +39,17 @@ const pages = [
   {
     num: 2,
     entries: [3, 4],
-    solution: { P: "Plains", M: "Mountain", O: "Ocean", V: "Village" },
+    solution: { O: "Ocean", V: "Village" },
   },
   {
     num: 3,
     entries: [5, 6],
-    solution: { P: "Plains", M: "Mountain", W: "Water" },
+    solution: { R: "River", F: "Forest" },
   },
   {
     num: 4,
     entries: [7, 8],
-    solution: { P: "Plains", M: "Mountain", V: "Village" },
+    solution: { X: "City" },
   },
 ];
 

@@ -12,7 +12,7 @@ P M M M M M R R P P P F F F F P P P P P P P P P P M M P P P P P P
 P P M M M R R P P P F F F F F F P P P P P P P P M M M M P P P P P
 P P P M M R P P P F F F F F F P P P P P P P P P M M M M P P P P P
 P P P P M R R P P P P P F F P P P P P P P P P P P M P P P P P P P
-P P P P P R R P P P P X P P P P P P P P P P P P P P P P P P P P P
+P P P P P R R P P P P P P P P P P P P P P P P P P P P P P P P P P
 P P P P P P R R R R R R R R R R R R R R O O O O O O O O O O O O O
 P P P P P P P P P P P P P P P R R R R O O O O O O O O O O O O O O
 P P P P P P P P P P P P P P P R R R P O O O O O O X O O O O O O O
