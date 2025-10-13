@@ -255,6 +255,21 @@ body {
   cursor: text;
 }
 
+.symbol-slot.correct-position {
+  background-color: #3aa394;
+  color: #eee;
+}
+
+.symbol-slot.correct-letter {
+  background-color: #d3ad69;
+  color: #1a1a1a;
+}
+
+.symbol-slot.incorrect-letter {
+  background-color: #782a40;
+  color: #eee;
+}
+
 #journal-content {
   padding-left: 2rem;
   padding-right: 2rem;
@@ -321,12 +336,33 @@ body {
 }
 
 #legend-button-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
   position: fixed;
   bottom: 150px;
   left: 25%;
   transform: translateX(-50%);
   z-index: 1000;
   text-align: center;
+}
+
+#check-answer-button {
+  color: #c5b8a5;
+  background-color: transparent;
+  border: 2px solid #665e52;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  padding: 0.5rem 2.5rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+#check-answer-button:hover {
+  background-color: #665e52;
+  color: #1a1a1a;
 }
 
 #legend-button {
@@ -503,7 +539,7 @@ body {
   Hello there. Now that I have your attention,
   I'd like you to know that developing this was pure agony.
   Since you've read this message,
-  you, kind individual,
+  YOU, kind individual,
   must pay a fine of 10,000,000.50 TTD.
 
   Gracias... :'D

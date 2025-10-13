@@ -113,6 +113,7 @@ async function swappedMapPopulatorInator(filePath, targetElementId, symbolMap) {
 
 async function updateChapterInator(index) {
   document.getElementById("legend-button").style.display = "block";
+  document.getElementById("check-answer-button").style.display = "block";
   const chapter = pageData[index];
   if (!chapter) {
     showEndScreenInator();
@@ -157,7 +158,7 @@ function resetSecondEntryInator() {
 }
 
 // I DESPISE how stupidly long this function is
-// But I can find no will to refactor it :p
+// But I can't find any will inside my soul to refactor it :p
 function symbolContainerPopulatorInator(chapter) {
   const container = document.getElementById("legend-container");
   container.innerHTML = "";
@@ -256,55 +257,116 @@ function symbolContainerPopulatorInator(chapter) {
   }
 }
 
-async function checkLegendCompletionInator(chapter) {
-  const allSlots = document.querySelectorAll(".symbol-slot");
-  let allCorrect = true;
+async function checkLegendCompletionInator(chapter, checkType) {
+  const legendContainers = document.querySelectorAll(".symbol-container");
+  let allWordsAreCorrect = true;
 
-  allSlots.forEach((slot) => {
-    const correct = slot.dataset.correct.toUpperCase();
-    const user = slot.textContent.toUpperCase();
-    if (correct !== user) {
-      allCorrect = false;
-      slot.classList.add("incorrect");
-      setTimeout(() => slot.classList.remove("incorrect"), 500);
+  legendContainers.forEach((container) => {
+    const slots = Array.from(
+      container.querySelectorAll(".symbol-slot, .space-slot")
+    );
+
+    const userGuess = slots
+      .map((s) => s.textContent.toUpperCase() || "_")
+      .join("");
+    const correctAnswer = slots.map((s) => s.dataset.correct || " ").join("");
+
+    let isThisWordCorrect = userGuess === correctAnswer;
+    if (!isThisWordCorrect) {
+      allWordsAreCorrect = false;
+    }
+
+    if (checkType === "check") {
+      const correctLetters = correctAnswer.split("");
+      const guessLetters = userGuess.split("");
+
+      slots.forEach((slot, i) => {
+        if (
+          guessLetters[i] === correctLetters[i] &&
+          slot.classList.contains("symbol-slot")
+        ) {
+          slot.classList.add("correct-position");
+          correctLetters[i] = null;
+          guessLetters[i] = null;
+        }
+      });
+
+      slots.forEach((slot, i) => {
+        if (
+          guessLetters[i] !== null &&
+          slot.classList.contains("symbol-slot")
+        ) {
+          const letterIndex = correctLetters.indexOf(guessLetters[i]);
+          if (letterIndex > -1) {
+            slot.classList.add("correct-letter");
+            correctLetters[letterIndex] = null;
+          } else {
+            slot.classList.add("incorrect-letter");
+          }
+        }
+      });
+
+      setTimeout(() => {
+        slots.forEach((slot) => {
+          slot.classList.remove(
+            "correct-position",
+            "correct-letter",
+            "incorrect-letter"
+          );
+        });
+      }, 1500);
+    }
+
+    if (checkType === "submit" && !isThisWordCorrect) {
+      slots.forEach((slot) => {
+        if (slot.classList.contains("symbol-slot")) {
+          slot.classList.add("incorrect");
+          setTimeout(() => slot.classList.remove("incorrect"), 500);
+        }
+      });
     }
   });
 
-  if (!allCorrect) {
+  if (checkType === "submit") {
+    if (!allWordsAreCorrect) {
+      const instructions = document.getElementById("instructions");
+      instructions.innerText = "Not quite right yet. Keep trying!";
+      instructions.classList.add("error-instructions");
+      setTimeout(() => {
+        instructions.innerText = "Determine the meaning of each symbol";
+        instructions.classList.remove("error-instructions");
+        instructions.classList.add("instructions");
+      }, 2000);
+      return;
+    }
+
     const instructions = document.getElementById("instructions");
-    instructions.innerText = "Not quite right yet. Keep trying!";
-    instructions.classList.add("error-instructions");
-    return;
-  }
+    instructions.innerText = "‎"; // Don't Judge Me!
+    instructions.classList.remove("error-instructions");
 
-  instructions.innerText = "‎";
-  instructions.classList.add("instructions");
+    const secondDate = document.getElementById("second-journal-date");
+    const secondContent = document.getElementById("second-narrative-content");
 
-  const secondDate = document.getElementById("second-journal-date");
-  const secondContent = document.getElementById("second-narrative-content");
+    if (!showingSecondEntry && chapter.continuationEntry) {
+      writingSound.currentTime = 0;
+      writingSound.play();
+      secondDate.innerText = journalDates[chapter.secondEntryNumber] || "";
 
-  if (!showingSecondEntry && chapter.continuationEntry) {
-    writingSound.currentTime = 0;
-    writingSound.play();
-    secondDate.innerText = journalDates[chapter.secondEntryNumber] || "";
+      await textPopulatorInator(
+        chapter.continuationEntry,
+        "second-narrative-content"
+      );
 
-    await textPopulatorInator(
-      chapter.continuationEntry,
-      "second-narrative-content"
-    );
+      secondDate.style.display = "block";
+      secondContent.style.display = "block";
+      setTimeout(() => {
+        secondDate.style.opacity = 1;
+        secondContent.style.opacity = 1;
+      }, 50);
 
-    secondDate.style.display = "block";
-    secondContent.style.display = "block";
-    secondDate.style.opacity = 0;
-    secondContent.style.opacity = 0;
-
-    setTimeout(() => {
-      secondDate.style.opacity = 1;
-      secondContent.style.opacity = 1;
-    }, 50);
-
-    showingSecondEntry = true;
-    document.getElementById("turn-button").style.display = "block";
+      showingSecondEntry = true;
+      document.getElementById("turn-button").style.display = "block";
+    }
   }
 }
 
@@ -474,10 +536,19 @@ document.addEventListener("DOMContentLoaded", () => {
     { once: true }
   );
 
+  document
+    .getElementById("check-answer-button")
+    .addEventListener("click", () => {
+      const currentChapter = pageData[currentChapterIndex];
+      if (currentChapter) {
+        checkLegendCompletionInator(currentChapter, "check");
+      }
+    });
+
   document.getElementById("legend-button").addEventListener("click", () => {
     const currentChapter = pageData[currentChapterIndex];
     if (currentChapter) {
-      checkLegendCompletionInator(currentChapter);
+      checkLegendCompletionInator(currentChapter, "submit");
     }
   });
 });
