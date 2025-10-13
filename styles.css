@@ -14,9 +14,54 @@ body {
   grid-template-areas: "menu content";
   grid-template-columns: 2fr 2fr;
   padding: 1rem;
+  gap: 1rem;
 }
 
-.container > div.map-container {
+@media (max-width: 900px) {
+  .container {
+    grid-template-areas:
+      "menu"
+      "content";
+    grid-template-columns: 1fr;
+  }
+
+  #map-display {
+    font-size: 1.2rem;
+  }
+
+  #journal-content {
+    padding: 1rem;
+  }
+
+  #button-container {
+    position: static;
+    text-align: center;
+    margin-top: 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  #map-display {
+    font-size: 1rem;
+  }
+
+  #narrative-content,
+  #second-narrative-content {
+    font-size: 1.2rem;
+  }
+
+  #journal-date,
+  #second-journal-date {
+    font-size: 1.6rem;
+  }
+
+  #turn-button {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+}
+
+.map-container {
   grid-area: menu;
   text-align: center;
 }
@@ -31,22 +76,31 @@ body {
 }
 
 #legend {
-  font-size: 2rem;
-  padding: 10px;
+  font-size: 1.5rem;
   font-family: "Homemade Apple", cursive;
 }
 
-.symbol-container {
+#legend-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.1rem;
   margin-top: 1rem;
+  justify-content: center;
+}
+
+.symbol-container {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  margin-left: 0;
   font-family: "Patrick Hand", cursive;
-  font-size: 1.2rem;
-  text-align: left;
-  margin-left: 10rem;
+  font-size: 1rem;
+  justify-content: center;
 }
 
 .symbol-container .symbol {
   font-weight: bold;
-  font-size: 2rem;
+  font-size: 1.5rem;
 }
 
 .symbol-container span {
@@ -71,23 +125,23 @@ body {
 }
 
 #journal-date {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
 }
 
 #narrative-content {
-  font-size: 1.5rem;
+  font-size: 1rem;
   padding-bottom: 2rem;
 }
 
 #second-journal-date {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 800;
   padding-top: 2rem;
 }
 
 #second-narrative-content {
-  font-size: 1.5rem;
+  font-size: 1rem;
   padding-bottom: 2rem;
 }
 
@@ -110,7 +164,25 @@ body {
   z-index: 1000;
 }
 
-#option-button {
+#turn-button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: #272823;
+  color: #eee;
+  border: 2px solid #eee;
+}
+
+#legend-button-container {
+  position: fixed;
+  bottom: 20px;
+  left: 25%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  text-align: center;
+}
+
+#legend-button {
   padding: 0.5rem 1rem;
   font-size: 1rem;
   cursor: pointer;

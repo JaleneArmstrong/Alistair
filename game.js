@@ -11,7 +11,7 @@ const journalDates = {
   5: "October 15th, 1925",
   6: "October 17th, 1925",
   7: "October 19th, 1925",
-  // 8: "October 21st, 1925",
+  8: "October 21st, 1925",
 };
 
 const symbols = {
@@ -42,8 +42,8 @@ const pages = [
   },
   {
     num: 4,
-    entries: [7], // 8
-    solution: { P: "Plains", M: "Mountain", S: "Settlement" },
+    entries: [7, 8],
+    solution: { P: "Plains", M: "Mountain", V: "Village" },
   },
 ];
 
@@ -60,79 +60,41 @@ const pageData = pages.map((page) => ({
 async function textPopulatorInator(filePath, targetElementId) {
   try {
     const response = await fetch(filePath);
-    if (!response.ok) {
-      throw new Error(`Whomp Whomp: ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(`Whomp Whomp: ${response.status}`);
     const textContent = await response.text();
     const targetElement = document.getElementById(targetElementId);
-
-    if (targetElement) {
-      targetElement.textContent = textContent;
-    } else {
-      console.error(
-        `ERROR: Target Element With ID "${targetElementId}" Not Found!`
-      );
-    }
+    if (targetElement) targetElement.textContent = textContent;
   } catch (error) {
-    console.error(
-      `ERROR: Something Went Wrong While Fetching The File!`,
-      error
-    );
+    console.error("ERROR loading text:", error);
   }
 }
 
-function mapSymbolSwapperInator(mapString, symbolMap, ignoreChars = []) {
-  let swappedMap = "";
-  const lines = mapString.split("\n");
-
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    let newLine = "";
-
-    for (let j = 0; j < line.length; j++) {
-      const char = line[j];
-      if (symbolMap[char] && !ignoreChars.includes(char)) {
-        newLine += symbolMap[char];
-      } else {
-        newLine += char;
-      }
-    }
-    swappedMap += newLine + (i < lines.length - 1 ? "\n" : "");
-  }
-  return swappedMap;
+function mapSymbolSwapperInator(mapString, symbolMap) {
+  return mapString
+    .split("\n")
+    .map((line) =>
+      [...line]
+        .map((char) => (symbolMap[char] ? symbolMap[char] : char))
+        .join("")
+    )
+    .join("\n");
 }
 
 async function swappedMapPopulatorInator(filePath, targetElementId, symbolMap) {
   try {
     const response = await fetch(filePath);
-    if (!response.ok) {
-      throw new Error(`Whomp Whomp: ${response.status}`);
-    }
-
+    if (!response.ok) throw new Error(`Whomp Whomp: ${response.status}`);
     const originalMap = await response.text();
     const swappedMap = mapSymbolSwapperInator(originalMap, symbolMap);
     const targetElement = document.getElementById(targetElementId);
-
-    if (targetElement) {
-      targetElement.textContent = swappedMap;
-    } else {
-      console.error(
-        `ERROR: Target Element With ID "${targetElementId}" Not Found!`
-      );
-    }
+    if (targetElement) targetElement.textContent = swappedMap;
   } catch (error) {
-    console.error(
-      `ERROR: Something Went Wrong While Fetching The File!`,
-      error
-    );
+    console.error("ERROR loading map:", error);
   }
 }
 
 function updateChapterInator(index) {
   const chapter = pageData[index];
-  const dateNum = chapter.firstEntryNumber;
-
   if (!chapter) {
     console.log("THE END");
     return;
@@ -141,7 +103,8 @@ function updateChapterInator(index) {
   currentChapterIndex = index;
   resetSecondEntryInator();
 
-  document.getElementById("journal-date").innerText = journalDates[dateNum];
+  document.getElementById("journal-date").innerText =
+    journalDates[chapter.firstEntryNumber];
   textPopulatorInator(chapter.journalEntry, "narrative-content");
   swappedMapPopulatorInator(chapter.mapPath, "map-display", chapter.symbols);
   symbolContainerPopulatorInator(chapter);
@@ -158,21 +121,26 @@ function resetSecondEntryInator() {
   secondDate.innerText = "";
   secondContent.textContent = "";
 
+  secondDate.classList.remove("fade-in");
+  secondContent.classList.remove("fade-in");
+
   showingSecondEntry = false;
+
+  const optionBtn = document.getElementById("turn-button");
+  if (optionBtn) optionBtn.style.display = "none";
 }
 
 function symbolContainerPopulatorInator(chapter) {
   const container = document.getElementById("legend-container");
   container.innerHTML = "";
 
-  const solution = chapter.solution;
+  const allSlots = [];
 
-  for (const [key, word] of Object.entries(solution)) {
+  for (const [key, word] of Object.entries(chapter.solution)) {
     const legendDiv = document.createElement("div");
     legendDiv.classList.add("symbol-container");
 
     const symbolChar = chapter.symbols[key] || key;
-
     const symbolSpan = document.createElement("span");
     symbolSpan.textContent = symbolChar;
     symbolSpan.classList.add("symbol");
@@ -181,25 +149,76 @@ function symbolContainerPopulatorInator(chapter) {
     for (let i = 0; i < word.length; i++) {
       const slot = document.createElement("span");
       slot.classList.add("symbol-slot");
-      slot.dataset.letter = word[i].toUpperCase();
+      slot.dataset.correct = word[i].toUpperCase();
       slot.textContent = "_";
       slot.contentEditable = "true";
       slot.spellcheck = false;
 
       slot.addEventListener("input", () => {
-        let char = slot.textContent.toUpperCase();
-        if (char.length > 1) char = char.slice(0, 1);
-        slot.textContent = char;
+        const char = slot.textContent.toUpperCase().replace(/[^A-Z]/g, "");
+        slot.textContent = char.slice(0, 1);
+
+        const currentIndex = allSlots.indexOf(slot);
+        if (char && currentIndex < allSlots.length - 1) {
+          allSlots[currentIndex + 1].focus();
+        }
       });
+
+      slot.addEventListener("keydown", (e) => {
+        const flatIndex = allSlots.indexOf(slot);
+
+        if (
+          ["ArrowRight", "ArrowLeft", "ArrowDown", "ArrowUp"].includes(e.key)
+        ) {
+          e.preventDefault();
+          let nextIndex = flatIndex;
+
+          if (e.key === "ArrowRight") nextIndex++;
+          if (e.key === "ArrowLeft") nextIndex--;
+          if (nextIndex >= 0 && nextIndex < allSlots.length) {
+            allSlots[nextIndex].focus();
+          }
+        }
+
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const finalizeBtn = document.getElementById("legend-button");
+          if (finalizeBtn) finalizeBtn.click();
+        }
+      });
+
       legendDiv.appendChild(slot);
+      allSlots.push(slot);
     }
+
     container.appendChild(legendDiv);
   }
+
+  document
+    .getElementById("legend-button")
+    .addEventListener("click", () => checkLegendCompletionInator(chapter));
 }
 
-document.getElementById("option-button").addEventListener("click", async () => {
-  const chapter = pageData[currentChapterIndex];
-  if (!chapter) return;
+async function checkLegendCompletionInator(chapter) {
+  const allSlots = document.querySelectorAll(".symbol-slot");
+  let allCorrect = true;
+
+  allSlots.forEach((slot) => {
+    const correct = slot.dataset.correct.toUpperCase();
+    const user = slot.textContent.toUpperCase();
+    if (correct !== user) {
+      allCorrect = false;
+      slot.classList.add("incorrect");
+      setTimeout(() => slot.classList.remove("incorrect"), 500);
+    }
+  });
+
+  if (!allCorrect) {
+    alert("Not quite right yet. Keep trying!");
+    return;
+  }
+
+  console.log("Legend completed!");
 
   const secondDate = document.getElementById("second-journal-date");
   const secondContent = document.getElementById("second-narrative-content");
@@ -223,21 +242,13 @@ document.getElementById("option-button").addEventListener("click", async () => {
     }, 50);
 
     showingSecondEntry = true;
-  } else {
-    const nextIndex = currentChapterIndex + 1;
-    updateChapterInator(nextIndex);
+    document.getElementById("turn-button").style.display = "block";
   }
-});
+}
 
-document.addEventListener("keydown", (e) => {
-  const letter = e.key.toUpperCase();
-  const slots = document.querySelectorAll(".symbol-slot");
-
-  slots.forEach((slot) => {
-    if (slot.textContent === "_" && slot.dataset.letter === letter) {
-      slot.textContent = letter;
-    }
-  });
+document.getElementById("turn-button").addEventListener("click", () => {
+  const nextIndex = currentChapterIndex + 1;
+  updateChapterInator(nextIndex);
 });
 
 document.addEventListener("DOMContentLoaded", () => {
