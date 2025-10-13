@@ -2,6 +2,16 @@
 
 let currentChapterIndex = 0;
 let showingSecondEntry = false;
+let musicStarted = false;
+let introLines = [];
+let currentIntroLine = 0;
+let typedInstance = null;
+
+const bgMusic = document.getElementById("bg-music");
+const pageFlipAudio = document.getElementById("page-flip-sound");
+const introOverlay = document.getElementById("intro-overlay");
+const introText = document.getElementById("intro-text");
+const introPrompt = document.getElementById("intro-prompt");
 
 const journalDates = {
   1: "October 5th, 1925",
@@ -246,11 +256,78 @@ async function checkLegendCompletionInator(chapter) {
   }
 }
 
+function startMusicInator() {
+  if (!musicStarted) {
+    bgMusic.play().catch(() => {
+      console.log("Browser requires interaction to play audio.");
+    });
+    musicStarted = true;
+  }
+}
+
+async function loadIntroInator() {
+  try {
+    const response = await fetch("narrative/intro.txt");
+    if (!response.ok) throw new Error(`Failed to load intro.txt`);
+    const text = await response.text();
+    introLines = text.split("\n").filter((line) => line.trim() !== "");
+    showNextIntroLineInator();
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function showNextIntroLineInator() {
+  if (currentIntroLine >= introLines.length) {
+    introOverlay.style.transition = "opacity 1s ease";
+    introOverlay.style.opacity = 0;
+    setTimeout(() => {
+      introOverlay.style.display = "none";
+      startMusicInator();
+      updateChapterInator(0);
+    }, 1000);
+    return;
+  }
+
+  const line = introLines[currentIntroLine];
+  currentIntroLine++;
+  if (typedInstance) {
+    typedInstance.destroy();
+  }
+
+  typedInstance = new Typed(introText, {
+    strings: [line],
+    typeSpeed: 20,
+    showCursor: false,
+    onComplete: () => {
+      introPrompt.style.opacity = 1;
+    },
+  });
+
+  introPrompt.style.opacity = 0;
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space") {
+    e.preventDefault();
+    if (introOverlay.style.display !== "none") {
+      if (typedInstance && typedInstance.typing) {
+        typedInstance.complete();
+      } else {
+        showNextIntroLineInator();
+      }
+    }
+  }
+});
 document.getElementById("turn-button").addEventListener("click", () => {
+  pageFlipAudio.currentTime = 0;
+  pageFlipAudio.play();
+
   const nextIndex = currentChapterIndex + 1;
   updateChapterInator(nextIndex);
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  loadIntroInator();
   updateChapterInator(currentChapterIndex);
 });

@@ -8,8 +8,18 @@
     />
   </head>
   <body>
+    <div id="intro-overlay">
+      <div id="intro-dialogue-box">
+        <p id="intro-text"></p>
+        <p id="intro-prompt">Press SPACE to continue</p>
+      </div>
+    </div>
+
     <div class="container">
       <div class="map-container">
+        <p id="instructions">
+          Assign a meaning to each symbol and decipher the map
+        </p>
         <div id="map-content">
           <pre id="map-display"></pre>
         </div>
@@ -17,7 +27,7 @@
           <p id="legend">Legend</p>
           <div id="legend-container"></div>
           <div id="legend-button-container">
-            <button id="legend-button">Finalize Legend</button>
+            <p id="legend-button"></p>
           </div>
         </div>
       </div>
@@ -33,6 +43,18 @@
         <button id="turn-button">Turn Page</button>
       </div>
     </div>
+    <audio id="bg-music" src="audio/alistair.mp3" loop></audio>
+    <audio
+      id="page-flip-sound"
+      src="audio/page-flip.mp3"
+      preload="auto"
+    ></audio>
+    <audio
+      id="text-blip-sound"
+      src="audio/text-blip.mp3"
+      preload="auto"
+    ></audio>
     <script src="game.js" defer></script>
+    <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
   </body>
 </html>
