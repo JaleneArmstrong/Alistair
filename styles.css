@@ -213,7 +213,7 @@ body {
 }
 
 #legend {
-  font-size: 1.5rem;
+  font-size: 1.7rem;
   font-family: "Homemade Apple", cursive;
 }
 
@@ -222,7 +222,7 @@ body {
   grid-template-columns: repeat(2, auto);
   column-gap: 2rem;
   row-gap: 0.5rem;
-  margin-top: 1rem;
+  padding: 10px;
   justify-content: center;
 }
 
@@ -339,12 +339,8 @@ body {
   display: flex;
   justify-content: center;
   gap: 1rem;
-  position: fixed;
-  bottom: 150px;
-  left: 25%;
-  transform: translateX(-50%);
-  z-index: 1000;
   text-align: center;
+  padding: 40px;
 }
 
 #check-answer-button {
@@ -381,6 +377,27 @@ body {
 #legend-button:hover {
   background-color: #665e52;
   color: #1a1a1a;
+}
+
+#help {
+  padding: 20px;
+  font-size: 1rem;
+  animation: helpGlow 1.5s infinite alternate;
+}
+
+@keyframes helpGlow {
+  0% {
+    text-shadow: 0 0 0px #c5b8a5, 0 0 1px #c5b8a5;
+    opacity: 0.9;
+  }
+  50% {
+    text-shadow: 0 0 1px #c5b8a5, 0 0 3px #c5b8a5;
+    opacity: 1;
+  }
+  100% {
+    text-shadow: 0 0 0px #c5b8a5, 0 0 1px #c5b8a5;
+    opacity: 0.9;
+  }
 }
 
 #intro-overlay {
@@ -503,12 +520,12 @@ body {
 .final-legend-item {
   display: flex;
   align-items: center;
-  font-size: 1.5em;
+  font-size: 1.5rem;
   align-content: center;
 }
 
 .final-legend-item .symbol {
-  font-size: 1.5em;
+  font-size: 1.5rem;
   width: 40px;
 }
 

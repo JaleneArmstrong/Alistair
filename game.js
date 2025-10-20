@@ -30,21 +30,21 @@ const journalDates = {
 };
 
 const symbols = {
+  X: "◍",
   P: "·",
   M: "▲",
-  F: "ᚠ",
   R: "~",
-  O: "≈",
   V: "ᛟ",
-  X: "◍",
-  Q: "?",
+  O: "≈",
+  F: "ᚠ",
+  Q: " ",
 };
 
 const pages = [
   {
     num: 1,
     entries: [1, 2],
-    solution: { P: "Plains", M: "Mountain" },
+    solution: { P: "Plains", M: "Mountains" },
   },
   {
     num: 2,
